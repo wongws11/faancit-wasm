@@ -16,12 +16,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
+      
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -31,28 +34,6 @@ jobs:
         run: |
           mkdir -p web
           GOOS=js GOARCH=wasm go build -o web/main.wasm
-
-      - name: Upload WASM binary
-        uses: actions/upload-artifact@v3
-        with:
-          name: wasm-binary
-          path: web/
-
-  deploy:
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Download WASM binary
-        uses: actions/download-artifact@v3
-        with:
-          name: wasm-binary
-          path: web/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
