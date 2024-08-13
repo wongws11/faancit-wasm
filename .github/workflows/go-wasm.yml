@@ -29,7 +29,8 @@ jobs:
 
       - name: Build Go WASM binary
         run: |
-          GOOS=js GOARCH=wasm go build -o main.wasm
+          mkdir -p web
+          GOOS=js GOARCH=wasm go build -o web/main.wasm
 
       - name: Upload WASM binary
         uses: actions/upload-artifact@v3
