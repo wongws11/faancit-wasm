@@ -14,6 +14,7 @@ func inputOnChange(this js.Value, args []js.Value) interface{} {
 	value := this.Get("value").String()
 
 	if len([]rune(value)) != 2 {
+		clearOutput()
 		return nil
 	}
 
@@ -21,6 +22,7 @@ func inputOnChange(this js.Value, args []js.Value) interface{} {
 	jyutpingLower, okLower := jyutping.GetJyutping(string([]rune(value)[1]))
 
 	if !okUpper || !okLower {
+		clearOutput()
 		return nil
 	}
 
@@ -35,9 +37,19 @@ func inputOnChange(this js.Value, args []js.Value) interface{} {
 	return nil
 }
 
+func clearOutput() {
+	js.Global().Get("document").Call("getElementById", "output").Set("innerText", "")
+	js.Global().Get("document").Call("getElementById", "pronunciations").Set("innerText", "")
+}
+
 func updateOutput(value string, pronunciations []string) {
 	js.Global().Get("document").Call("getElementById", "output").Set("innerText", value)
-	js.Global().Get("document").Call("getElementById", "pronunciations").Set("innerText", fmt.Sprintf("%v", pronunciations))
+
+	pronunciationsString := ""
+	for _, pronunciation := range pronunciations {
+		pronunciationsString += pronunciation + " "
+	}
+	js.Global().Get("document").Call("getElementById", "pronunciations").Set("innerText", fmt.Sprintf("%v", pronunciationsString))
 }
 
 func main() {
