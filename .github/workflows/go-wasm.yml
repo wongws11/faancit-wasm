@@ -28,7 +28,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'
+          go-version: '1.25'
+
+      - name: Refresh wasm_exec.js from Go toolchain
+        run: |
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" web/wasm_exec.js
 
       - name: Build Go WASM binary
         run: |

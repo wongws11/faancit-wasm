@@ -1,3 +1,3 @@
 module github.com/wongws11/faancit-wasm
 
-go 1.22.6
+go 1.25
