@@ -30,10 +30,6 @@ jobs:
         with:
           go-version: "1.25"
 
-      - name: Get wasm_exec.js
-        run: |
-          curl -o web/wasm_exec.js "https://raw.githubusercontent.com/golang/go/go$(go version | awk '{print $3}' | sed 's/go//')/misc/wasm/wasm_exec.js"
-
       - name: Build Go WASM binary
         run: |
           mkdir -p web
