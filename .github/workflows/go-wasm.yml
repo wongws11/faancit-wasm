@@ -24,15 +24,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.25'
+          go-version: "1.25"
 
-      - name: Refresh wasm_exec.js from Go toolchain
+      - name: Get wasm_exec.js
         run: |
-          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" web/wasm_exec.js
+          curl -o web/wasm_exec.js "https://raw.githubusercontent.com/golang/go/go$(go version | awk '{print $3}' | sed 's/go//')/misc/wasm/wasm_exec.js"
 
       - name: Build Go WASM binary
         run: |
@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'web/'
+          path: "web/"
 
       - name: Deploy to GitHub Pages
         id: deployment
