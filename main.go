@@ -49,7 +49,7 @@ func updateOutput(value string, pronunciations []string) {
 	for _, pronunciation := range pronunciations {
 		pronunciationsString += pronunciation + " "
 	}
-	js.Global().Get("document").Call("getElementById", "pronunciations").Set("innerText", fmt.Sprintf("%v", pronunciationsString))
+	js.Global().Get("document").Call("getElementById", "pronunciations").Set("innerText", pronunciationsString)
 }
 
 func main() {

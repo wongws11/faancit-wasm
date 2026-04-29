@@ -1,4 +1,4 @@
-name: Build Go WASM Binaries and Deploy static content to Pages
+name: Build TinyGo WASM and Deploy to Pages
 
 on:
   push:
@@ -28,12 +28,18 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.25"
+          go-version: "1.26"
 
-      - name: Build Go WASM binary
-        run: |
-          mkdir -p web
-          GOOS=js GOARCH=wasm go build -o web/main.wasm
+      - name: Set up TinyGo
+        uses: nicolo-ribaudo/setup-tinygo@v1
+        with:
+          tinygo-version: "0.41.1"
+
+      - name: Run tests
+        run: make test
+
+      - name: Build TinyGo WASM binary
+        run: make build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
