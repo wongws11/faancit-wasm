@@ -1,34 +1,40 @@
 WASM_TARGET := wasm32-unknown-unknown
-WASM_BINDGEN_VERSION := 0.2.126
+BINARYEN_VERSION := 131
+WASM_OPT ?= wasm-opt
 WASM_INPUT := target/$(WASM_TARGET)/release/faancit_wasm.wasm
-WASM_OUT_DIR := web/pkg
+WASM_OUT := web/faancit_wasm.wasm
 
-.PHONY: build check check-wasm-bindgen clean test
+.PHONY: build check check-wasm-opt clean test test-web
 
-build: check-wasm-bindgen
+build: check-wasm-opt
 	cargo build --release --target $(WASM_TARGET)
-	wasm-bindgen --target web --no-typescript --out-dir $(WASM_OUT_DIR) \
-		--out-name faancit_wasm $(WASM_INPUT)
+	$(WASM_OPT) -Oz --enable-bulk-memory --strip-debug --strip-producers $(WASM_INPUT) -o $(WASM_OUT)
 
 check:
 	cargo fmt --all -- --check
 	cargo clippy --all-targets -- -D warnings
 	cargo check --target $(WASM_TARGET)
+	node --check web/app.mjs
+	node --check scripts/test-browser.mjs
+	node --check scripts/test-web.mjs
 
-check-wasm-bindgen:
-	@command -v wasm-bindgen >/dev/null || { \
-		echo "wasm-bindgen-cli $(WASM_BINDGEN_VERSION) is required" >&2; \
-		echo "Install it with: cargo install --locked wasm-bindgen-cli --version $(WASM_BINDGEN_VERSION)" >&2; \
+check-wasm-opt:
+	@command -v $(WASM_OPT) >/dev/null || { \
+		echo "Binaryen $(BINARYEN_VERSION) is required" >&2; \
 		exit 1; \
 	}
-	@test "$$(wasm-bindgen --version)" = "wasm-bindgen $(WASM_BINDGEN_VERSION)" || { \
-		echo "wasm-bindgen-cli $(WASM_BINDGEN_VERSION) is required; found $$(wasm-bindgen --version)" >&2; \
+	@test "$$($(WASM_OPT) --version)" = "wasm-opt version $(BINARYEN_VERSION) (version_$(BINARYEN_VERSION))" || { \
+		echo "Binaryen $(BINARYEN_VERSION) is required; found $$($(WASM_OPT) --version)" >&2; \
 		exit 1; \
 	}
 
 test:
 	cargo test --all-targets
 
+test-web: build
+	node scripts/test-web.mjs
+	node scripts/test-browser.mjs
+
 clean:
 	cargo clean
-	rm -rf $(WASM_OUT_DIR) web/main.wasm
+	rm -rf web/pkg web/main.wasm $(WASM_OUT)

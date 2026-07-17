@@ -1,6 +1,6 @@
 mod jyutping;
 
-pub use jyutping::{Faancit, JyutpingChar, get_faancit, get_jyutping};
+pub use jyutping::{Faancit, JyutpingChar, Tone, get_faancit, get_jyutping};
 
 #[cfg(target_arch = "wasm32")]
-mod web;
+pub mod abi;

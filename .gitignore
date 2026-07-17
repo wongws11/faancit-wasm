@@ -2,3 +2,4 @@
 /target/
 /web/pkg/
 /web/main.wasm
+/web/faancit_wasm.wasm
