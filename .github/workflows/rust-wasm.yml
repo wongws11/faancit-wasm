@@ -1,9 +1,8 @@
-name: Build TinyGo WASM and Deploy to Pages
+name: Build Rust WASM and Deploy to Pages
 
 on:
   push:
     branches: ["main"]
-
   workflow_dispatch:
 
 permissions:
@@ -25,22 +24,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@1.97.1
         with:
-          go-version: "1.26"
+          components: clippy, rustfmt
+          targets: wasm32-unknown-unknown
 
-      - name: Set up TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v0.41.1/tinygo_0.41.1_amd64.deb
-          sudo dpkg -i tinygo_0.41.1_amd64.deb
-          echo "/usr/local/lib/tinygo/bin" >> $GITHUB_PATH
+      - name: Cache Rust builds
+        uses: Swatinem/rust-cache@v2
 
-      - name: Run tests
-        run: make test
+      - name: Install wasm-bindgen CLI
+        run: cargo install --locked wasm-bindgen-cli --version 0.2.126
 
-      - name: Build TinyGo WASM binary
-        run: make build
+      - name: Build deployment assets
+        run: ./scripts/build-pages.sh
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
