@@ -38,15 +38,11 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Install Binaryen 131
-        env:
-          BINARYEN_SHA256: b5bf1f0eaf17c63ee588ff7a5954dc8f6ce2c26989051c66f24dfe9ece3e46db
-        run: |
-          curl --fail --location --output binaryen.tar.gz \
-            https://github.com/WebAssembly/binaryen/releases/download/version_131/binaryen-version_131-x86_64-linux.tar.gz
-          echo "$BINARYEN_SHA256  binaryen.tar.gz" | sha256sum --check
-          tar --extract --gzip --file binaryen.tar.gz
-          echo "$PWD/binaryen-version_131/bin" >> "$GITHUB_PATH"
+      - name: Cache Binaryen
+        uses: actions/cache@v4
+        with:
+          path: .tools/binaryen-version_131
+          key: binaryen-131-x86_64-linux
 
       - name: Build deployment assets
         run: ./scripts/build-pages.sh

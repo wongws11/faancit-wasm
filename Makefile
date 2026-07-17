@@ -1,10 +1,10 @@
 WASM_TARGET := wasm32-unknown-unknown
 BINARYEN_VERSION := 131
-WASM_OPT ?= wasm-opt
+WASM_OPT ?= $(CURDIR)/.tools/binaryen-version_$(BINARYEN_VERSION)/bin/wasm-opt
 WASM_INPUT := target/$(WASM_TARGET)/release/faancit_wasm.wasm
 WASM_OUT := web/faancit_wasm.wasm
 
-.PHONY: build check check-wasm-opt clean test test-web
+.PHONY: build check check-wasm-opt clean setup test test-web
 
 build: check-wasm-opt
 	cargo build --release --target $(WASM_TARGET)
@@ -18,7 +18,10 @@ check:
 	node --check scripts/test-browser.mjs
 	node --check scripts/test-web.mjs
 
-check-wasm-opt:
+setup:
+	@command -v $(WASM_OPT) >/dev/null || ./scripts/install-binaryen.sh
+
+check-wasm-opt: setup
 	@command -v $(WASM_OPT) >/dev/null || { \
 		echo "Binaryen $(BINARYEN_VERSION) is required" >&2; \
 		exit 1; \

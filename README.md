@@ -8,10 +8,9 @@ A deliberately tiny Cantonese faancit converter with a Rust core compiled to Web
 
 - [Rust 1.97.1](https://www.rust-lang.org/tools/install) through `rustup`
 - `wasm32-unknown-unknown`, installed automatically from `rust-toolchain.toml`
-- [Binaryen 131](https://github.com/WebAssembly/binaryen/releases/tag/version_131)
 - Node.js 22 or newer for exhaustive WASM and browser-adapter tests
 
-`wasm-opt --version` must report `wasm-opt version 131 (version_131)`.
+`make build` automatically downloads and checksum-verifies [Binaryen 131](https://github.com/WebAssembly/binaryen/releases/tag/version_131) into the ignored `.tools/` directory. Run `make setup` to install it explicitly.
 
 ## Development
 
